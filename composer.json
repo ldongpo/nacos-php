@@ -1,0 +1,29 @@
+{
+    "name": "ldongpo/nacos-php",
+    "authors": [
+        {
+            "name": "liangdongpo",
+            "email": "mail@liangdongpo.com"
+        }
+    ],
+
+    "require": {
+        "php": ">=8.1.0",
+        "guzzlehttp/guzzle": "^7.8",
+        "grpc/grpc": "^1.6.0",
+        "google/protobuf": "^3.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "nacosphp\\": "src",
+            "GPBMetadata\\": "src/example/grpc/library/GPBMetadata",
+            "Helloworld\\": "src/example/grpc/library/Helloworld"
+        }
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://mirrors.aliyun.com/composer/"
+        }
+    }
+}
