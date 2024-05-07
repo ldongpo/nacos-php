@@ -5,6 +5,7 @@ use nacosphp\request\naming\DeleteInstanceNaming;
 use nacosphp\request\naming\RegisterInstanceNaming;
 use nacosphp\request\naming\ListInstanceNaming;
 use nacosphp\exception\ResponseCodeErrorException;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * 服务发现客户端
@@ -13,14 +14,16 @@ class NamingClient
 {
     /**
      * 初始化
-     * @param $serviceName
-     * @param $ip
-     * @param $port
+     * @param string $serviceName
+     * @param string $ip
+     * @param int $port
      * @param string $namespaceId
      * @param string $weight
      * @param bool $ephemeral
+     * @param string $clusterName
+     * @param string $groupName
      */
-    public function __construct($serviceName, $ip, $port, string $namespaceId = "", string $weight = "", bool $ephemeral = true)
+    public function __construct(string $serviceName, string $ip, int $port, string $namespaceId = "", string $weight = "", bool $ephemeral = true, string $clusterName = "", string $groupName = "")
     {
         NamingConfig::setServiceName($serviceName);
         NamingConfig::setIp($ip);
@@ -28,6 +31,8 @@ class NamingClient
         NamingConfig::setNamespaceId($namespaceId);
         NamingConfig::setWeight($weight);
         NamingConfig::setEphemeral($ephemeral);
+        NamingConfig::setClusterName($clusterName);
+        NamingConfig::setGroupName($groupName);
     }
 
 
@@ -38,14 +43,22 @@ class NamingClient
      * Time:18:25
      * @param bool $enable
      * @param bool $healthy
-     * @param string $clusterName
-     * @param string $groupName
+     * @param string $clusterName  集群名称，默认为DEFAULT
+     * @param string $groupName 分组名，默认为DEFAULT_GROUP
      * @param string $metadata
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      * @throws ResponseCodeErrorException
      */
-    public function register(bool $enable = true, bool $healthy = true, string $clusterName = "", string $groupName = "", string $metadata = "{}"): \Psr\Http\Message\ResponseInterface
+    public function register(bool $enable = true, bool $healthy = true, string $clusterName = "", string $groupName = "", string $metadata = "{}"): ResponseInterface
     {
+        // 分组名是空的情况下，取初始化时的分组名
+        if($groupName == ""){
+            $groupName = NamingConfig::getGroupName();
+        }
+        // 集群名是空的情况下，取初始化时的集群名
+        if($clusterName == ""){
+            $clusterName = NamingConfig::getClusterName();
+        }
         $registerInstanceDiscovery = new RegisterInstanceNaming();
         $registerInstanceDiscovery->setServiceName(NamingConfig::getServiceName());
         $registerInstanceDiscovery->setIp( NamingConfig::getIp());
@@ -76,12 +89,21 @@ class NamingClient
      * Date: 2024/4/28
      * Time:18:25
      * @param string $namespaceId
-     * @param string $clusterName
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param string $clusterName 集群名称，默认为DEFAULT
+     * @param string $groupName 分组名，默认为DEFAULT_GROUP
+     * @return ResponseInterface
      * @throws ResponseCodeErrorException
      */
-    function delete(string $namespaceId = "", string $clusterName = "",$groupName = ""): \Psr\Http\Message\ResponseInterface
+    function delete(string $namespaceId = "", string $clusterName = "", string $groupName = ""): ResponseInterface
     {
+        // 分组名是空的情况下，取初始化时的分组名
+        if($groupName == ""){
+            $groupName = NamingConfig::getGroupName();
+        }
+        // 集群名是空的情况下，取初始化时的集群名
+        if($clusterName == ""){
+            $clusterName = NamingConfig::getClusterName();
+        }
         $deleteInstanceNaming = new DeleteInstanceNaming();
         $deleteInstanceNaming->setServiceName(NamingConfig::getServiceName());
         $deleteInstanceNaming->setIp(NamingConfig::getIp());
@@ -108,12 +130,20 @@ class NamingClient
      * Time:18:54
      * @param bool $healthyOnly
      * @param string $namespaceId
-     * @param string $clusterName
-     * @param string $groupName
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param string $clusterName 集群名称，默认为DEFAULT
+     * @param string $groupName 分组名，默认为DEFAULT_GROUP
+     * @return ResponseInterface
      * @throws ResponseCodeErrorException
      */
-    function list(bool $healthyOnly = false, string $namespaceId = "", string $clusterName = "", string $groupName = ""): \Psr\Http\Message\ResponseInterface{
+    function list(bool $healthyOnly = false, string $namespaceId = "", string $clusterName = "", string $groupName = ""): ResponseInterface{
+        // 分组名是空的情况下，取初始化时的分组名
+        if($groupName == ""){
+            $groupName = NamingConfig::getGroupName();
+        }
+        // 集群名是空的情况下，取初始化时的集群名
+        if($clusterName == ""){
+            $clusterName = NamingConfig::getClusterName();
+        }
         $listInstanceNaming = new ListInstanceNaming();
         $listInstanceNaming->setServiceName(NamingConfig::getServiceName());
         $listInstanceNaming->setNamespaceId($namespaceId != "" ? $namespaceId : NamingConfig::getNamespaceId());

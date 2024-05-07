@@ -55,9 +55,15 @@ $call = new callGrpcService(
         "0",
         "4f2a4e22-7668-4a8e-8b05-bcd3a5d925c2",
         "",
-        false
+        false,
+        "",
+        ""
     )
 );
+//设置重试次数和重试间隔，非必选项
+$call::setMaxRetries(2);
+$call::setRetryDelay(3000);
+
 // 需要传的参数
 $data = [
     'name' => 'world',

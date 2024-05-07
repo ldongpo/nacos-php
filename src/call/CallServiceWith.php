@@ -8,6 +8,8 @@ use nacosphp\config\NacosConfig;
 abstract class CallServiceWith
 {
     private  string $nsHost; //配置中心地址
+    private static int $maxRetries = 3; //重试次数
+    private static int $retryDelay = 2000;//重试间隔
     protected NamingClient $naming;
     public function __construct(string $nsHost,NamingClient $naming){
         NacosConfig::setHost($nsHost); // 配置中心地址
@@ -26,6 +28,50 @@ abstract class CallServiceWith
      */
     abstract protected function callback ($ip,$port,$data): mixed;
 
+    /**
+     * Notes: 设置重试次数
+     * User: mail@liangdongpo.com
+     * Date: 2024/5/6
+     * Time:11:37
+     * @param int $maxRetries
+     * @return void
+     */
+    public static function setMaxRetries(int $maxRetries): void
+    {
+        self::$maxRetries = $maxRetries;
+    }
+    /**
+     * Notes: 设置重试间隔
+     * User: mail@liangdongpo.com
+     * Date: 2024/5/6
+     * Time:11:37
+     * @param int $retryDelay
+     * @return void
+     */
+    public static function setRetryDelay(int $retryDelay): void
+    {
+        self::$retryDelay = $retryDelay;
+    }
+    /**
+     * Notes: 获取重试次数
+     * User: mail@liangdongpo.com
+     * Date: 2024/5/6
+     * Time:11:37
+     * @return int
+     */
+    public static function getMaxRetries(): int{
+        return self::$maxRetries;
+    }
+    /**
+     * Notes: 获取重试间隔
+     * User: mail@liangdongpo.com
+     * Date: 2024/5/6
+     * Time:11:37
+     * @return int
+     */
+    public static function getRetryDelay(): int{
+        return self::$retryDelay;
+    }
     /**
      * Notes:
      * User: mail@liangdongpo.com
@@ -109,24 +155,22 @@ abstract class CallServiceWith
      * Date: 2024/4/30
      * Time:16:17
      * @param array $data
-     * @param int $maxRetries
-     * @param int $retryDelay
      * @return mixed|void
      * @throws ResponseCodeErrorException
      */
-    function retry(array $data, int $maxRetries = 3, int $retryDelay = 2000) {
+    function retry(array $data) {
         $attempts = 0;
         $instance = $this->getHealthyOnlyServiceInstances();
-        while ($attempts < $maxRetries) {
+        while ($attempts < self::$maxRetries) {
             try {
                 return $this->callback($instance['ip'],$instance['port'],$data);
             } catch (Exception $e) {
                 $attempts++;
-                if ($attempts >= $maxRetries) {
+                if ($attempts >=  self::$maxRetries) {
                     throw new ResponseCodeErrorException(-1, "Maximum retry attempts reached, last error: " . $e->getMessage());
                 }
                 // 等待一定时间后重试
-                usleep($retryDelay * 1000);  // usleep 的单位是微秒
+                usleep(self::$retryDelay * 1000);  // usleep 的单位是微秒
             }
         }
     }
@@ -137,13 +181,11 @@ abstract class CallServiceWith
      * Date: 2024/4/30
      * Time:16:18
      * @param array $data
-     * @param int $maxRetries
-     * @param int $retryDelay
      * @return mixed
      * @throws ResponseCodeErrorException
      */
-    function callServiceWithRetry(array $data, int $maxRetries = 3, int $retryDelay = 2000): mixed
+    function callServiceWithRetry(array $data): mixed
     {
-        return $this->retry($data, $maxRetries, $retryDelay);
+        return $this->retry($data);
     }
 }

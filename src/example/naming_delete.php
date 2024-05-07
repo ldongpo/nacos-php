@@ -12,7 +12,9 @@ $naming = new NamingClient(
     "9999",
     "4f2a4e22-7668-4a8e-8b05-bcd3a5d925c2",
     "",
-    false
+    false,
+    "",
+    ""
 );
 
 // 删除实例

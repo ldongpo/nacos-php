@@ -34,6 +34,17 @@ class NamingConfig
     private static bool $ephemeral = true;
 
     /**
+     * 集群名称，默认为DEFAULT
+     * @param string $clusterName
+     */
+    private static string $clusterName = "";
+
+    /**
+     * 分组名，默认为DEFAULT_GROUP
+     * @param string $groupName
+     */
+    private static string $groupName = "";
+    /**
      * @param bool $ephemeral
      */
     public static function setEphemeral(bool $ephemeral): void
@@ -83,5 +94,21 @@ class NamingConfig
     public static function setWeight(string $weight): void
     {
         self::$weight = $weight;
+    }
+    public static function getClusterName(): string
+    {
+        return self::$clusterName;
+    }
+    public static function setClusterName(string $clusterName): void
+    {
+        self::$clusterName = $clusterName;
+    }
+    public static function getGroupName(): string
+    {
+        return self::$groupName;
+    }
+    public static function setGroupName(string $groupName): void
+    {
+        self::$groupName = $groupName;
     }
 }
