@@ -1,5 +1,6 @@
 {
     "name": "ldongpo/nacos-php",
+    "license": "MIT",
     "authors": [
         {
             "name": "liangdongpo",
