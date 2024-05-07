@@ -10,6 +10,9 @@
 
 
 ## 快速开始
+### 使用方式
+
+`composer require ldongpo/nacos-php`
 ### 注册实例
 ```
 use nacosphp\config\NacosConfig;
